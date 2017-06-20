@@ -13,6 +13,13 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+cwd = os.getcwd()  # Get the current working directory (cwd)
+files = os.listdir(cwd)  # Get all the files in that directory
+print("Files in '%s': %s" % (cwd, files))
+
+
+
 # Load final_vstack_out_pagers_rtv_datenums
 from Data import rtv
 # Load BI_linefile
@@ -31,6 +38,11 @@ from Class.CLokada import Okada
 oka = Okada("okada")
 from Class.CLstation import Station
 sta = Station("station")
+
+
+
+
+
 
 
 # Main program : all the run is done here

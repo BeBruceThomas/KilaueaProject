@@ -14,17 +14,19 @@ import numpy as np
 # Excel modul 
 import xlrd
 
+path = "/gps/Bruce/KilaueaProject-master"
+
 
 """ stnm """
 
 # size of doc
-rtv_stnm = open("C:\\Users\\bruce\\Desktop\\encours\\Data\\rtv\\stnm.txt", "r")
+rtv_stnm = open(path+"/Data/rtv/stnm.txt", "r")
 len_stnm = 0
 while rtv_stnm.readline():
     len_stnm += 1
 rtv_stnm.close()
 # stnm
-rtv_stnm = open("C:\\Users\\bruce\\Desktop\\encours\\Data\\rtv\\stnm.txt", "r")
+rtv_stnm = open(path+"/Data/rtv/stnm.txt", "r")
 stnm = []
 for i in range(len_stnm):
     ch = rtv_stnm.readline()
@@ -59,7 +61,7 @@ epochs = [57134.0422899999 , 57134.0844899999	, 57134.1240699999	, 57134.1655600
 """ north, east and up data on Excel (too big for an efficient Python matrix) """
 
 # Open Excel
-excel = xlrd.open_workbook("C:\\Users\\bruce\\Desktop\\encours\\Data\\rtv\\data1.xlsx")
+excel = xlrd.open_workbook(path+"/Data/rtv/data1.xlsx")
 # Open all sheets
 sheets = excel.sheet_names()
 # Sheet 1 : rt_north
@@ -73,25 +75,25 @@ rt_up = excel.sheet_by_name(sheets[2])
 """ lat, lon & elev data copied in matrix """
 
 # size of doc
-rtv_lat = open("C:\\Users\\bruce\\Desktop\\encours\\Data\\rtv\\rtv_lat.txt", "r")
+rtv_lat = open(path+"/Data/rtv/rtv_lat.txt", "r")
 len_lle = 0
 while rtv_lat.readline():
     len_lle += 1
 rtv_lat.close()
 # lat
-rtv_lat = open("C:\\Users\\bruce\\Desktop\\encours\\Data\\rtv\\rtv_lat.txt", "r")
+rtv_lat = open(path+"/Data/rtv/rtv_lat.txt", "r")
 lat = np.zeros((len_lle, 1))
 for i in range(len_lle):
     lat[i][0] = rtv_lat.readline()
 rtv_lat.close()
 # lon
-rtv_lon = open("C:\\Users\\bruce\\Desktop\\encours\\Data\\rtv\\rtv_lon.txt", "r")
+rtv_lon = open(path+"/Data/rtv/rtv_lon.txt", "r")
 lon = np.zeros((len_lle, 1))
 for i in range(len_lle):
     lon[i][0] = rtv_lon.readline()
 rtv_lon.close()
 # elev 
-rtv_elev = open("C:\\Users\\bruce\\Desktop\\encours\\Data\\rtv\\rtv_elev.txt", "r")
+rtv_elev = open(path+"/Data/rtv/rtv_elev.txt", "r")
 elev = np.zeros((len_lle, 1))
 for i in range(len_lle):
     elev[i][0] = rtv_elev.readline()
