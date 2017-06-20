@@ -26,7 +26,7 @@ cal = Calendar("calendar")
 from Class.CLgeographic import Geographic
 geo = Geographic("geographic")
 from Class.CLmodel import Model
-mod = Model("model")
+mod = Model("model", cal.jdyTOmjd(137, 2015), cal.jdyTOmjd(133, 2015))
 from Class.CLokada import Okada
 oka = Okada("okada")
 from Class.CLstation import Station
@@ -122,16 +122,7 @@ def main():
     for i in range(len_ifit):
         x[i][0] = mjds[ifit[i]-1]
     
-    """
-    x = [0] * len_ifit
-    for i in range(len_ifit):
-        x[i] = mjds[ifit[i]-1]
-    """
-    """
-    x = np.ones((len_ifit, 1)) * 3
-    
-    y = np.ones((len_ifit, 303)) * 2
-    """
+
     # search on each GPS site 
     stepN = [0] * len_isN
     errsN = [0] * len_isN  
@@ -139,17 +130,17 @@ def main():
     errsE = [0] * len_isN
     stepU = [0] * len_isN
     errsU = [0] * len_isN
-       
+    
     for isite in range(0, len_isN):
-        [ymodel, a0hat, a1hat, bhat] = mod.robust_step(x, annex.get_y(ifit, subN, isite)[1], t1, t2)
+        [bhat, a0hat, a1hat, err] = mod.robust_step(x, annex.get_y(ifit, subN, isite)[0], t1, t2)
         stepN[isite] = a1hat
-        #errsN[isite] = stats.se(2)
-        [ymodel, a0hat, a1hat, bhat] = mod.robust_step(x, annex.get_y(ifit, subE, isite)[1], t1, t2)
+        errsN[isite] = err
+        [bhat, a0hat, a1hat, err] = mod.robust_step(x, annex.get_y(ifit, subE, isite)[0], t1, t2)
         stepE[isite] = a1hat
-        #errsE[isite] = stats.se(2)
-        [ymodel, a0hat, a1hat, bhat] = mod.robust_step(x, annex.get_y(ifit, subU, isite)[1], t1, t2)
+        errsE[isite] = err
+        [bhat, a0hat, a1hat, err] = mod.robust_step(x, annex.get_y(ifit, subU, isite)[0], t1, t2)
         stepU[isite] = a1hat
-        #errsU[isite] = stats.se(2)  
+        errsU[isite] = err 
     
     
     # Save data in a GMT-readable table
@@ -159,14 +150,15 @@ def main():
     
     # Write data for each GPS station 
     for isite in range(len_isN):
+        
         fid.write("\n" 
                   + kilsites[isite] 
                   + "     " 
-                  + str( format(rtv.lat[ isN[isite][0] ] [0], '.5f') ) 
+                  + str( format(rtv.lat[ int(isN[isite][0]) ] [0], '.5f') ) 
                   + "     "
-                  + str( format(rtv.lon[ isN[isite][0] ] [0], '.5f') )
+                  + str( format(rtv.lon[ int(isN[isite][0]) ] [0], '.5f') )
                   + "     "
-                  + str( format(rtv.elev[ isN[isite][0] ] [0], '.1f').zfill(6) )
+                  + str( format(rtv.elev[ int(isN[isite][0]) ] [0], '.1f').zfill(6) )
                   + "     "
                   + str( format(stepN[isite], '.1f').zfill(5) )
                   + "     "
@@ -180,6 +172,7 @@ def main():
                   + "     "
                   + str( format(errsU[isite], '.1f') )
                   )
+    
     # Close table for a save!
     fid.close()
 
@@ -199,7 +192,7 @@ def main():
     siteLAT = np.zeros((len_isN, 1))
     siteLON = np.zeros((len_isN, 1))
     for isite in range(len_isN):
-        result = geo.from_latlon(rtv.lat[isN[isite][0]][0], rtv.lon[isN[isite][0]][0])
+        result = geo.from_latlon(rtv.lat[ int(isN[isite][0]) ][0], rtv.lon[ int(isN[isite][0]) ][0])
         siteLAT[isite] = result[0]
         siteLON[isite] = result[1]               
     
@@ -212,19 +205,40 @@ def main():
     plt.plot(bi.cx - x0, bi.cy - y0, 'k-')
     
     # Define limit axes
-    """
+    
     axes = plt.gca()
-    axes.set_xlim([xlims[0], xlims[1]])
-    axes.set_ylim([ylims[0], ylims[1]])
-    """
+    #axes.set_xlim([xlims[0], xlims[1]])
+    #axes.set_ylim([ylims[0], ylims[1]])
+    
+    plt.xlim([xlims[0], xlims[1]])
+    plt.ylim([ylims[0], ylims[1]])
+    
     plt.plot(siteLAT - x0, siteLON - y0, 'bo')
-    """
-    hvert = plt.quiver(siteLAT - x0, siteLON - y0, 0 * stepE, stepU, 1)
-    #hhoriz = quiver(sitex - x0, sitey - y0, stepE, stepN, 1)
-    #set(hhoriz,'Color','r')
-    plt.scatter(siteLAT - x0, siteLON - y0, color='r', s=5)
-    #set(hvert, 'Color', 'm')
-    """
+
+    for i in range(len_isN):
+        # Simplfie notation
+        lat = siteLAT - x0
+        lon = siteLON - y0
+        lati = lat[i][0]
+        print(lati)
+        long = lon[i][0]
+        print(long)
+        sU = stepU[i]
+        print(sU)
+        sE = stepE[i]
+        print(sE)
+        sN = stepN[i]
+        print(sN)
+        # Magenta arrows for elevation
+        if (lati >= xlims[0]) and (lati <= xlims[1]) and (long >= ylims[0]) and (long <= ylims[1]):
+            plt.arrow(lati, long, 0, sU*100, head_width=500, head_length=1000, fc='m', ec='m', clip_on=False)
+            #plt.annotate('', xy=(lati, long+sU), xytext=(lati, long), arrowprops={'facecolor':'magenta', 'edgecolor':'magenta', 'linewidth':'0'})
+        # Red arrows for motions
+        if (lati >= xlims[0]) and (lati <= xlims[1]) and (long >= ylims[0]) and (long <= ylims[1]):
+            plt.arrow(lati, long, sE*100, sN*100, head_width=500, head_length=1000, fc='r', ec='r', clip_on=False)
+            #plt.annotate('', xy=(lati+sE, long+sN), xytext=(lati, long), arrowprops={'facecolor':'red', 'edgecolor':'red', 'linewidth':'0'})
+    
+      
     plt.title("GPS Vectors between days 133 and 137 2015")
     
     plt.show()
@@ -235,19 +249,18 @@ def main():
     # Fit an Okada : surface deformation due to a finite rectangular source.
     #--------------------------------------------------------------------------
     
-    
     """
     # Defnition of the site locations & motions
     site_neu_posn = [sitey - y0, sitex - x0, rtv.elev(isN)]
     site_neu_slip = [stepN, stepE, stepU]
     site_neu_err =  [errsN, errsE, errsU]
-    
+    """
+    """
     # Okada parameters
     #                   E,     N,    Z, strike,   dip,  length,  width,  rake,   slip, opening    ,nu  ???
     upper_bounds = [14000, 12000, 5000,    180,    90,    1000,   5000,   0.1,    0.1,   10000]
     okada_start  = [ 8000,  5000, 1000,    -45,     0,    4000,   2000,   0.0,    0.0,    1000]
-    lower_bounds = [ 2000,     0,    0,   -180,   -90,     500,    100,  -0.1,   -0.1,       1]
-    
+    lower_bounds = [ 2000,     0,    0,   -180,   -90,     500,    100,  -0.1,   -0.1,       1]    
     """
     
     

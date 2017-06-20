@@ -13,104 +13,98 @@ IN PROGRESS
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.optimize import least_squares
+from scipy import stats
 
 from sklearn.linear_model import (LinearRegression, TheilSenRegressor, RANSACRegressor, HuberRegressor)
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_pipeline
 
+from Class.CLcalendar import Calendar
+cal = Calendar("calendar")
+from Class.CLannex import Annex
+annex = Annex("annex")
 
+
+def fun(x, t, y):
+    """
+    x: vector of parameters (b, a0, a1)
+        b: slope
+        a0 and a1: intercept
+    t: time in absciss
+    y: observations 
+    """
+    
+    fun = []
+    for i in range(len(t)):
+        value = x[0] * t[i] + x[1]
+        fun.append(value)
+        if (t[i] >= cal.jdyTOmjd(137, 2015)):
+            fun[i] += x[2]
+    res = []
+    for i in range(len(y)):
+        value = y[i] - fun[i][0]
+        res.append(value)
+    #print(res)
+    return(res)
+
+    
 class Model():
     
-    def __init__(self, name):
+    def __init__(self, name, t_bef_step, t_aft_step):
         self.name = name
+        self.t_bef_step = cal.jdyTOmjd(133, 2015)
+        self.t_aft_step = cal.jdyTOmjd(137, 2015)
+        
+    def generate_data(self, t, b, a0, a1):
+        
+        y = []
+        for i in range(len(t)):
+            value = b * t[i] + a0
+            y.append(value)
+            if (t[i] >= self.t_aft_step):
+                y[i] += a1
+        return y
     
-    def robust_step(self, x, y, x1, x2):
+    
+    def robust_step(self, data_t, data_y, t_bef_step, t_aft_step):
+      
+        y = data_y
+        where_are_NaNs = np.isnan(y)
+        y[where_are_NaNs] = 0
+         
+        t = data_t
+                
+        x0 = np.zeros(3)
         
-        X = x
-        Y = y
+        res_lsq = least_squares(fun, x0, args=(t, y))
         
-        n = len(X)
+        y_lsq = Model.generate_data(self, t, *res_lsq.x)
         
-        I0 = np.ones((n,1))
-        I1 = np.ones((n,1))
+        plt.plot(t, y, '+', label='data')
         
-        for i in range(n):
-            if X[i] >= x1:
-                I0[i][0] = 0
-            elif X[i] <= x2:
-                I1[i][0] = 0
-        
-        count = 0
-        for i in range(n):
-            if I0[i] == 0:
-                count += 1
-        
-        X0 = np.zeros((n-count,1))
-        X1 = np.zeros((count,1))
-        
-        for i in range(n-count):
-            X0[i][0] = X[i][0]
-        #for i in range(count):
-        #    X1[i][0] = X[i+n-1][0]
-        
-        result = Model.graph(self, X0, Y)
-        
-        # Data that intrest us 
-        ymodel = result[0]
-        a0hat = result[1]
-        a1hat = result[2]
-        bhat = result[3]
-               
-        return ([ymodel, a0hat, a1hat, bhat])
+        #t1 = int(self.t_bef_step)
 
-    
-    def graph(self, x, y):
-                   
-        estimators = [('OLS', LinearRegression()),
-                      ('Theil-Sen', TheilSenRegressor(random_state = 42)),
-                      ('RANSAC', RANSACRegressor(random_state = 42)),
-                      ('HuberRegressor', HuberRegressor())
-                     ]
+        plt.plot(t, y_lsq, label='lsq')
         
-        colors = {'OLS': 'turquoise', 'Theil-Sen': 'gold', 'RANSAC': 'lightgreen', 'HuberRegressor': 'black'}
-        linestyle = {'OLS': '-', 'Theil-Sen': '-.', 'RANSAC': '--', 'HuberRegressor': '--'}
-        lw = 3
         
-        x_plot = np.linspace(x.min(), x.max())
-                   
-        plt.figure(figsize = (10, 8))
-        plt.plot(x[:, 0], y, 'b+')
-    
-        for name, estimator in estimators:
-            model = make_pipeline(PolynomialFeatures(3), estimator)
+        plt.xlabel('$t$')
+        plt.ylabel('$y$')
+        plt.legend()
         
-            where_are_NaNs = np.isnan(y)
-            y[where_are_NaNs] = 0
-              
-            model.fit(x, y)
-        
-            #model_ransac = linear_model.RANSACRegressor(linear_model.LinearRegression())
-            #model_ransac.fit(this_X, this_Y)              
-            
-            mse = mean_squared_error(model.predict(x), y)
-            y_plot = model.predict(x_plot[:, np.newaxis])
-            plt.plot(x_plot, y_plot, color=colors[name], linestyle=linestyle[name], linewidth=lw, label='%s: error = %.3f' % (name, mse))
-
-        
-        Xl = []
-        for i in range(len(x)):
-            Xl.append(x[i][0])
-        b = np.polyfit(Xl, y, 1)
-        #msep = mean_squared_error(model.predict(x), y)
-        ymodel = b[0] * x + b[1]
-        a1hat = b[0] * Xl[-1] + b[1]
-        plt.plot(x, ymodel, color='red', linestyle='-', linewidth=lw, label='%s: error = %.3f' % ('Polyfit', 0))
-        
-        legend_title = 'Type Estimation'
-        legend = plt.legend(loc='upper right', frameon=False, title=legend_title)        
-        plt.title('Kilauea Project')
-             
         plt.show()
+                
+        bhat = res_lsq.x[0]
+        a0hat = res_lsq.x[1]
+        a1hat = res_lsq.x[2]
         
-        return ([ymodel, b[1], a1hat, b[0]])
+        # Standard error deviation 
+        errD = np.std(y_lsq-y)
+        # Standard error on coefficients 
+        err = errD / np.sqrt(len(y))
+        
+        #err = stats.sem(res_lsq.x[2], axis=None)
+        #err = np.sqrt(sum((y_lsq-y)**2)/len(y))
+        
+        return ([bhat, a0hat, a1hat, err])
