@@ -14,9 +14,9 @@ You will have to change the PATHS to data (excel or txt) !
 # Moduls imported
 import os
 import numpy as np
-import matplotlib.pyplot as plt
 
 path = "/gps/Bruce/KilaueaProject-master"
+
 
 # feature: size of doc
 bi_fx = open(path+"/Data/bi/features/x.txt", "r")
@@ -36,6 +36,7 @@ fy = np.zeros((len_fxy, 1))
 for i in range(len_fxy):
     fy[i][0] = bi_fy.readline()
 bi_fy.close()
+
 
 # coast: size of doc
 bi_cx = open(path+"/Data/bi/coast/x.txt", "r")

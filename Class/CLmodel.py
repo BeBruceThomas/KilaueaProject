@@ -16,11 +16,6 @@ import matplotlib.pyplot as plt
 from scipy.optimize import least_squares
 from scipy import stats
 
-from sklearn.linear_model import (LinearRegression, TheilSenRegressor, RANSACRegressor, HuberRegressor)
-from sklearn.metrics import mean_squared_error
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.pipeline import make_pipeline
-
 from Class.CLcalendar import Calendar
 cal = Calendar("calendar")
 from Class.CLannex import Annex
