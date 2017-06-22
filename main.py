@@ -31,6 +31,8 @@ from Data import rtv
 from Data import bi
 # Load dataForOkada
 from Data import dataForOkada
+# Load site_neu data 
+from Data import site_neu
 
 
 # Import personnal modul and class 
@@ -48,8 +50,7 @@ from Class.CLstation import Station
 sta = Station("station")
 
 
-def f(a):
-    return a
+
 
 
 # Main program : all the run is done here
@@ -277,31 +278,46 @@ for isite in range(len_isN):
 site_neu_slip = [stepN, stepE, stepU]
 site_neu_err =  [errsN, errsE, errsU]
 
+
 # Save data in a GMT-readable table
-f_posn = open("site_neu_posn.dat", "w")
-for isite in range(len_isN):
-    f_posn.write(site_neu_posn[0][j] + " ")
-f_posn.write("\n")
-for isite in range(len_isN):
-    f_posn.write(site_neu_posn[1][j] + " ")
-f_posn.write("\n")
-for isite in range(len_isN):
-    f_posn.write(site_neu_posn[2][j] + " ")
-f_posn.close()
+f_posnY = open("Data/site_neu/site_neu_posnY.dat", "w")
+for i in range(len_isN):
+    f_posnY.write(str(site_neu_posn[0][i]) + "\n")
+f_posnY.close()    
+f_posnX = open("Data/site_neu/site_neu_posnX.dat", "w")
+for i in range(len_isN):
+    f_posnX.write(str(site_neu_posn[1][i]) + "\n")
+f_posnX.close()      
+f_posnZ = open("Data/site_neu/site_neu_posnZ.dat", "w")
+for i in range(len_isN):
+    f_posnZ.write(str(site_neu_posn[2][i]) + "\n")
+f_posnZ.close()  
 
-f_slip = open("site_neu_slip.dat", "w")
-for isite in range(len_isN):
-    f_slip.write(site_neu_slip[0][j] + " ")
-f_slip.write("\n")
-for isite in range(len_isN):
-    f_slip.write(site_neu_slip[1][j] + " ")
-f_slip.write("\n")
-for isite in range(len_isN):
-    f_slip.write(site_neu_slip[2][j] + " ")
-f_slip.close()
+f_slipY = open("Data/site_neu/site_neu_slipY.dat", "w")
+for i in range(len_isN):
+    f_slipY.write(str(site_neu_slip[0][i]) + "\n")
+f_slipY.close()  
+f_slipX = open("Data/site_neu/site_neu_slipX.dat", "w")
+for i in range(len_isN):
+    f_slipX.write(str(site_neu_slip[1][i]) + "\n")
+f_slipX.close()  
+f_slipZ = open("Data/site_neu/site_neu_slipZ.dat", "w")
+for i in range(len_isN):
+    f_slipZ.write(str(site_neu_slip[2][i]) + "\n")
+f_slipZ.close()      
 
-
-
+f_errY = open("Data/site_neu/site_neu_errY.dat", "w")
+for i in range(len_isN):
+    f_errY.write(str(site_neu_err[0][i]) + "\n")
+f_errY.close() 
+f_errX = open("Data/site_neu/site_neu_errX.dat", "w")
+for i in range(len_isN):
+    f_errX.write(str(site_neu_err[1][i]) + "\n")
+f_errX.close() 
+f_errZ = open("Data/site_neu/site_neu_errZ.dat", "w")
+for i in range(len_isN):
+    f_errZ.write(str(site_neu_err[2][i]) + "\n")
+f_errZ.close() 
 
 
 # Okada parameters
@@ -312,33 +328,31 @@ lower_bounds = dataForOkada.okada_initial_params[2]
 
 # Create a sample fault and print out some information about it.
 fault, subfault = Okada.set_params(okada_start)
-print ("This sample fault has %s meter of slip over a %s by %s km patch" \
-       % (subfault.slip,subfault.length/1e3,subfault.width/1e3))
+print ("This sample fault has %s meter of slip over a %s by %s km patch" \ % (subfault.slip,subfault.length/1e3,subfault.width/1e3))
 print ("With shear modulus %4.1e Pa the seismic moment is %4.1e" % (subfault.mu, subfault.Mo()))
 print ("   corresponding to an earthquake with moment magnitude %s" % fault.Mw())
 print ("The depth at the top edge of the fault plane is %s km" % (subfault.depth/1e3))  
 
 
 # Fit an okada to the data
-
 #[okada_params, fval, exit_flag, num_func] = scipy.optimize.fminbound('okada_SWRZ_fit', lower_bounds, upper_bounds)
-
 """
 #[okada_params,resnorm,residual,exitflag] =  lsqnonlin('okada_SWRZ_fit',okada_start,lower_bounds,upper_bounds);
 options = optimset('fminsearch');
 [okada_params,resnorm,exitflag,output] =  fminsearchbnd('okada_SWRZ_fit',okada_start,lower_bounds,upper_bounds,options);
-        
-calc_slip = NaN.*site_neu_err;
-
-for isite = 1:nsites;
-    site_slip = calc_SWRZ_okada(okada_params,site_neu_posn(:,isite));
-    calc_slip(:,isite)=site_slip;
-end
+"""
 
 
+nsite = len(site_neu.err[0])
+calc_slip = np.zeros((1, nsite))
+for isite in range(nsite):
+    site_slip = Okada.calc_SWZR_okada(self, dataForOkada.okada_start, site_neu.posn)
+    calc_slip[0][isite] = site_slip
+            
+
+"""
 h_okada_vert=quiver(sitex-x0,sitey-y0,0*stepE',calc_slip(3,:)',1)
 h_okada_horiz=quiver(sitex-x0,sitey-y0,calc_slip(2,:)',calc_slip(1,:)',1)
 set(h_okada_horiz,'Color','k')
 set(h_okada_vert,'Color',[.7 .7 .7])
 """
-

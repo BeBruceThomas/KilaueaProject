@@ -7,6 +7,7 @@ Kilauea_Project
 """
 Script for the Okada Data
 OK 
+You will have to change the PATHS to data (excel or txt) !  
 """
 
 
@@ -35,4 +36,3 @@ for i in range(11):
     okada_initial_params[2][i] = lower_bounds.readline()
 lower_bounds.close()
 
-print(okada_initial_params)
