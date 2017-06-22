@@ -15,7 +15,7 @@ You will have to change the PATHS to data (excel or txt) !
 import os
 import numpy as np
 
-path = "/gps/Bruce/KilaueaProject-master"
+path = "/gps/Bruce/KilaueaProject"
 
 
 # feature: size of doc

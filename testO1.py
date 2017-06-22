@@ -24,10 +24,10 @@ def set_fault(strike, dip, rake, depth):
     subfault.strike = strike
     subfault.dip = dip
     subfault.rake = rake
-    subfault.length = 100.e3
-    subfault.width = 50.e3
+    subfault.length = 4000
+    subfault.width = 2000
     subfault.depth = depth
-    subfault.slip = 1.
+    subfault.slip = 0.
     subfault.longitude = 0.
     subfault.latitude = 0.
     subfault.coordinate_specification = "top center"
@@ -37,7 +37,7 @@ def set_fault(strike, dip, rake, depth):
     return fault, subfault
 
 # Create a sample fault and print out some information about it...
-fault, subfault = set_fault(0,0,0,5e3)
+fault, subfault = set_fault(1000, -45, 0, 0)
 print ("This sample fault has %s meter of slip over a %s by %s km patch" \
        % (subfault.slip,subfault.length/1e3,subfault.width/1e3))
 print ("With shear modulus %4.1e Pa the seismic moment is %4.1e" % (subfault.mu, subfault.Mo()))
@@ -45,9 +45,9 @@ print ("   corresponding to an earthquake with moment magnitude %s" % fault.Mw()
 print ("The depth at the top edge of the fault plane is %s km" % (subfault.depth/1e3))
 
 def plot_okada(strike, dip, rake, depth, verbose=False):
-    """
-    Make 3 plots to illustrate the Okada solution.
-    """
+    
+    #Make 3 plots to illustrate the Okada solution.
+    
 
     fault,subfault = set_fault(strike, dip, rake, depth)
     ax1 = plt.subplot(2,2,1)

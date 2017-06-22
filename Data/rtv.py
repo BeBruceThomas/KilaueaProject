@@ -14,7 +14,7 @@ import numpy as np
 # Excel modul 
 import xlrd
 
-path = "/gps/Bruce/KilaueaProject-master"
+path = "/gps/Bruce/KilaueaProject"
 
 
 """ stnm """
