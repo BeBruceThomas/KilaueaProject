@@ -25,6 +25,16 @@ def get_params():
     alpha = (lmda + mu) / (lmda + 2 * mu)
     return source_depth, obs_depth, poisson_ratio, mu, dip, alpha
 
+def get_paramsMOI():
+    source_depth = 1.0
+    obs_depth = 1.0
+    poisson_ratio = 0.25
+    mu = 30.0
+    dip = 0.0
+    lmda = 2 * mu * poisson_ratio / (1 - 2 * poisson_ratio)
+    alpha = (lmda + mu) / (lmda + 2 * mu)
+    return source_depth, obs_depth, poisson_ratio, mu, dip, alpha
+
 def test_dc3d0():
     source_depth, obs_depth, poisson_ratio, mu, dip, alpha = get_params()
     n = (100, 100)
@@ -77,6 +87,35 @@ def test_dc3d():
     savefig("strike_slip.png")
     show()
 
+def test_dc3dMOI():
+    source_depth, obs_depth, poisson_ratio, mu, dip, alpha = get_paramsMOI()
+    n = (100, 100)
+    x = linspace(0.0, 14.0, n[0])
+    y = linspace(0.0, 14.0, n[1])
+    ux = zeros((n[0], n[1]))
+    for i in range(n[0]):
+        for j in range(n[1]):
+            success, u, grad_u = dc3dwrapper(alpha,
+                                               [x[i], y[j], -obs_depth],
+                                               source_depth, dip,
+                                               [0.5, 1.0], [0.1, 5.0],
+                                               [0.0, 0.0, 1.0])
+            assert(success == 0)
+            ux[i, j] = u[0]
+
+    levels = linspace(-0.5, 0.5, 21)
+    cntrf = contourf(x, y, ux.T, levels = levels)
+    contour(x, y, ux.T, colors = 'k', levels = levels, linestyles = 'solid')
+    xlabel('x')
+    ylabel('y')
+    cbar = colorbar(cntrf)
+    tick_locator = matplotlib.ticker.MaxNLocator(nbins=5)
+    cbar.locator = tick_locator
+    cbar.update_ticks()
+    cbar.set_label('$u_{\\textrm{x}}$')
+    savefig("strike_slip.png")
+    show()
+    
 def test_success():
     # should fail because z is positive
     success, u, grad_u = dc3d0wrapper(1.0, [0.0, 0.0, 1.0],
@@ -103,6 +142,6 @@ def benchmark():
 
 if __name__ == '__main__':
     # test_dc3d0()
-    test_dc3d()
+    test_dc3dMOI()
     #test_success()
     # benchmark()

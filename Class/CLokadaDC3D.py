@@ -70,8 +70,8 @@ class OkadaDC3D():
     def test_dc3d():
         alpha, x0, depth, dip, strike_width, dip_width, dislocation = OkadaDC3D.get_params(self)
         n = (100, 100)
-        x = linspace(-1, 1, n[0])
-        y = linspace(-1, 1, n[1])
+        x = linspace(dataForOkada.lower_bounds[0], dataForOkada.upper_bounds[0], n[0])
+        y = linspace(dataForOkada.lower_bounds[1], dataForOkada.upper_bounds[1], n[1])
         ux = zeros((n[0], n[1]))
         for i in range(n[0]):
             for j in range(n[1]):
