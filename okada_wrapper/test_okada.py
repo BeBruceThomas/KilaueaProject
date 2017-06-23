@@ -6,6 +6,7 @@ from matplotlib.pyplot import contourf, contour,\
     xlabel, ylabel, title, colorbar, show, savefig
 import matplotlib
 import time
+
 matplotlib.rcParams['font.family'] = 'serif'
 matplotlib.rcParams['font.serif'] = ['Computer Modern Roman']
 matplotlib.rcParams['text.usetex'] = True
@@ -103,4 +104,5 @@ def benchmark():
 if __name__ == '__main__':
     # test_dc3d0()
     test_dc3d()
+    #test_success()
     # benchmark()

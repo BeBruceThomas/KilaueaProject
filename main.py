@@ -45,8 +45,10 @@ from Class.CLgeographic import Geographic
 geo = Geographic("geographic")
 from Class.CLmodel import Model
 mod = Model("model", cal.jdyTOmjd(137, 2015), cal.jdyTOmjd(133, 2015))
-from Class.CLokada import Okada
-oka = Okada("okada")
+from Class.CLokadaDC3D import OkadaDC3D
+okaD = OkadaDC3D("okadaDC3D")
+from Class.CLokadaCLAWPACK import OkadaCLAWPACK
+okaC = OkadaCLAWPACK("okadaCLAWPACK")
 from Class.CLstation import Station
 sta = Station("station")
 
@@ -335,8 +337,8 @@ for i in range(len_bounds):
     lower_bounds[0][i] = lower_boundsA[i]
     
 
-# Create a sample fault and print out some information about it.
-fault, subfault = Okada.set_params(okada_start)
+# Create a sample fault and print out some information about it: use of CLAWPACK version for Okada.
+fault, subfault = okaC.set_params(okada_start)
 print ("This sample fault has %s meter of slip over a %s by %s km patch" % (subfault.slip,subfault.length/1e3,subfault.width/1e3))
 print ("With shear modulus %4.1e Pa the seismic moment is %4.1e" % (subfault.mu, subfault.Mo()))
 print ("   corresponding to an earthquake with moment magnitude %s" % fault.Mw())
@@ -355,7 +357,7 @@ options = optimset('fminsearch');
 nsite = len(site_neu.err[0])
 calc_slip = np.zeros((1, nsite))
 for isite in range(nsite):
-    site_slip = oka.calc_SWZR_okada(dataForOkada.okada_start, site_neu.posn)
+    site_slip = okaD.calc_SWZR_okada(dataForOkada.okada_start, site_neu.posn)
     calc_slip[0][isite] = site_slip
             
 

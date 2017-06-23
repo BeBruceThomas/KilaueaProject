@@ -28,7 +28,7 @@ class OkadaCLAWPACK():
         self.name = name
 
     
-    def set_params(params):
+    def set_params(self, params):
         """
         Set the subfault parameters. 
         """
