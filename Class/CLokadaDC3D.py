@@ -61,8 +61,8 @@ class OkadaDC3D():
         x0 = [ dataForOkada.okada_start[0], dataForOkada.okada_start[1], - dataForOkada.okada_start[2] ]
         depth = dataForOkada.okada_start[2]
         dip = dataForOkada.okada_start[4]
-        strike_width = [ dataForOkada.okada_start[], dataForOkada.okada_start[] ]
-        dip_width = [ dataForOkada.okada_start[], dataForOkada.okada_start[] ]
+        strike_width = [ -dataForOkada.okada_start[5]/2, dataForOkada.okada_start[5]/2 ]
+        dip_width = [ -dataForOkada.okada_start[6]/2, dataForOkada.okada_start[6]/2 ]
         dislocation = [ dataForOkada.okada_start[7], dataForOkada.okada_start[8], dataForOkada.okada_start[9] ]
         
         return alpha, x0, depth, dip, strike_width, dip_width, dislocation

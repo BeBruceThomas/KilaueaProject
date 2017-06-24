@@ -29,7 +29,7 @@ def get_paramsMOI():
     source_depth = 1.0
     obs_depth = 1.0
     poisson_ratio = 0.25
-    mu = 30.0
+    mu = 1.0
     dip = 0.0
     lmda = 2 * mu * poisson_ratio / (1 - 2 * poisson_ratio)
     alpha = (lmda + mu) / (lmda + 2 * mu)
@@ -89,16 +89,16 @@ def test_dc3d():
 
 def test_dc3dMOI():
     source_depth, obs_depth, poisson_ratio, mu, dip, alpha = get_paramsMOI()
-    n = (100, 100)
-    x = linspace(0.0, 14.0, n[0])
-    y = linspace(0.0, 14.0, n[1])
+    n = (1000, 1000)
+    x = linspace(-4.0, 4.0, n[0])
+    y = linspace(-4.0, 4.0, n[1])
     ux = zeros((n[0], n[1]))
     for i in range(n[0]):
         for j in range(n[1]):
             success, u, grad_u = dc3dwrapper(alpha,
                                                [x[i], y[j], -obs_depth],
                                                source_depth, dip,
-                                               [0.5, 1.0], [0.1, 5.0],
+                                               [-2.0, 2.0], [-1.0, 1.0],
                                                [0.0, 0.0, 1.0])
             assert(success == 0)
             ux[i, j] = u[0]

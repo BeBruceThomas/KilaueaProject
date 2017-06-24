@@ -70,7 +70,6 @@ t0 = cal.jdyTOmjd(125, 2015)
 # Dates of start and end of dike
 t1 = cal.jdyTOmjd(133, 2015)
 t2 = cal.jdyTOmjd(137, 2015)
-  
 # Reference sites for GPS   
 # kilsites is actually a list but on matlab it was a table !!!            
 kilsites = ['UWEV', 'NUPM', 'AHUP', 'HOVL', 'CNPK', 'BYRL', 'NPIT', 'KOSM', 'OUTL', 'CRIM', 'MANE', 'HLNA', 'KFAP', 'AINP', 'GOPM']
