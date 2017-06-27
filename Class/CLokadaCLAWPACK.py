@@ -60,35 +60,6 @@ class OkadaCLAWPACK():
         result = dtopotools.SubFault().okada(self, site_neu[1] - okada_params[0], site_neu[0] - okada_params[1])
         
         return result
-        
-        
-    def okada_SWZR_fit(self):
-        """
-        Evaluates the misfit of an okada solution defined by the passed parameters to the slip (and errors) globally defined.
-        """
-        
-        nsite = len(site_neu.err[0])
-        
-        slip_weights = np.zeros((3, nsite))
-        for i in range(3):
-            for j in range(nsite):
-                slip_weights = 1 / (site_neu.err[i][j]**2)
-        
-        # only for z first
-        calc_slip = np.zeros((1, nsite))
-        slip_misfit = np.zeros((1, nsite))
-        
-        for isite in range(nsite):
-            site_slip = Okada.calc_SWZR_okada(self, dataForOkada.okada_start, site_neu.posn)
-            calc_slip[0][isite] = site_slip
-            slip_misfit[0][isite] = site_neu.slip[2][isite] - calc_slip[0][isite]
-        
-        misfit = np.zeros((1, nsite))
-        
-        for isite in range(nsite):            
-            misfit[0][isite] = slip_misfit[0][isite] * slip_weights[2][isite] / (sum(slip_weights[2]))
-        
-        return misfit 
        
         
         

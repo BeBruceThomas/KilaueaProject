@@ -22,12 +22,11 @@ cwd = os.getcwd()
 files = os.listdir(cwd)
 print("Files in '%s': %s" % (cwd, files))
 
-
 # Choose the path to access data: have to find a solution to change only in the main only or directly emter in the interface 
 path = "/gps/Bruce/KilaueaProject"
 
 # Load final_vstack_out_pagers_rtv_datenums
-from Data import rtv
+#from Data import rtv
 # Load BI_linefile
 from Data import bi
 # Load dataForOkada
